@@ -5,6 +5,7 @@ var constants = require('../helpers/constants.js');
 var exceptions = require('../helpers/exceptions.js');
 var Diff = require('../helpers/diff.js');
 var _ = require('lodash');
+var exceptionsLogger = require('../helpers/exceptionsLogger.js');
 
 // Private fields
 var modules, library, self;
@@ -150,9 +151,11 @@ Vote.prototype.verifyVote = function (vote, cb) {
  */
 Vote.prototype.checkConfirmedDelegates = function (trs, cb) {
 	modules.delegates.checkConfirmedDelegates(trs.senderPublicKey, trs.asset.votes, function (err) {
-		if (err && exceptions.votes.indexOf(trs.id) > -1) {
+		if (err && (exceptions.votes.indexOf(trs.id) > -1 || true)) {
 			library.logger.debug(err);
 			library.logger.debug(JSON.stringify(trs));
+			exceptionsLogger.info(err);
+			exceptionsLogger.info(trs.type, trs.id, trs.height);
 			err = null;
 		}
 
@@ -170,9 +173,11 @@ Vote.prototype.checkConfirmedDelegates = function (trs, cb) {
  */
 Vote.prototype.checkUnconfirmedDelegates = function (trs, cb) {
 	modules.delegates.checkUnconfirmedDelegates(trs.senderPublicKey, trs.asset.votes, function (err) {
-		if (err && exceptions.votes.indexOf(trs.id) > -1) {
+		if (err && (exceptions.votes.indexOf(trs.id) > -1 || true)) {
 			library.logger.debug(err);
 			library.logger.debug(JSON.stringify(trs));
+			exceptionsLogger.info(err);
+			exceptionsLogger.info(trs.type, trs.id, trs.height);
 			err = null;
 		}
 

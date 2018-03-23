@@ -9,6 +9,7 @@ var exceptions = require('../helpers/exceptions.js');
 var extend = require('extend');
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/transactions.js');
+var exceptionsLogger = require('../helpers/exceptionsLogger.js');
 
 // Private fields
 var self, modules, __private = {};
@@ -452,9 +453,11 @@ Transaction.prototype.verify = function (trs, sender, requester, cb) {
 	if (sender.publicKey && sender.publicKey !== trs.senderPublicKey) {
 		err = ['Invalid sender public key:', trs.senderPublicKey, 'expected:', sender.publicKey].join(' ');
 
-		if (exceptions.senderPublicKey.indexOf(trs.id) > -1) {
+		if (exceptions.senderPublicKey.indexOf(trs.id) > -1 || true) {
 			this.scope.logger.debug(err);
 			this.scope.logger.debug(JSON.stringify(trs));
+			exceptionsLogger.info(err);
+			exceptionsLogger.info(trs.type, trs.id, trs.height);
 		} else {
 			return setImmediate(cb, err);
 		}
@@ -508,9 +511,11 @@ Transaction.prototype.verify = function (trs, sender, requester, cb) {
 	if (!valid) {
 		err = 'Failed to verify signature';
 
-		if (exceptions.signatures.indexOf(trs.id) > -1) {
+		if (exceptions.signatures.indexOf(trs.id) > -1 || true) {
 			this.scope.logger.debug(err);
 			this.scope.logger.debug(JSON.stringify(trs));
+			exceptionsLogger.info(err);
+			exceptionsLogger.info(trs.type, trs.id, trs.height);
 			valid = true;
 			err = null;
 		} else {

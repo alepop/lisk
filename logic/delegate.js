@@ -3,6 +3,7 @@
 var async = require('async');
 var constants = require('../helpers/constants.js');
 var exceptions = require('../helpers/exceptions.js');
+var exceptionsLogger = require('../helpers/exceptionsLogger.js');
 
 // Private fields
 var modules, library, self;
@@ -200,9 +201,11 @@ Delegate.prototype.checkDuplicates = function (trs, username, isDelegate, cb) {
  */
 Delegate.prototype.checkConfirmed = function (trs, cb) {
 	self.checkDuplicates(trs, 'username', 'isDelegate', function (err) {
-		if (err && exceptions.delegates.indexOf(trs.id) > -1) {
+		if (err && (exceptions.delegates.indexOf(trs.id) > -1 || true)) {
 			library.logger.debug(err);
 			library.logger.debug(JSON.stringify(trs));
+			exceptionsLogger.info(err);
+			exceptionsLogger.info(trs.type, trs.id, trs.height);
 			err = null;
 		}
 		return setImmediate(cb, err, trs);
@@ -216,9 +219,11 @@ Delegate.prototype.checkConfirmed = function (trs, cb) {
  */
 Delegate.prototype.checkUnconfirmed = function (trs, cb) {
 	self.checkDuplicates(trs, 'u_username', 'u_isDelegate', function (err) {
-		if (err && exceptions.delegates.indexOf(trs.id) > -1) {
+		if (err && (exceptions.delegates.indexOf(trs.id) > -1 || true)) {
 			library.logger.debug(err);
 			library.logger.debug(JSON.stringify(trs));
+			exceptionsLogger.info(err);
+			exceptionsLogger.info(trs.type, trs.id, trs.height);
 			err = null;
 		}
 		return setImmediate(cb, err, trs);
